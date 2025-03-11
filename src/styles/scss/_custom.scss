@@ -1,0 +1,601 @@
+:root {
+  --blue: #233D4D;
+  --green: #619B8A;
+  --orange: #FE7F2D;
+  --yellow: #FCCA46;
+  --darkGreen: #659E89;
+  --lightGreen: #A1C181;
+  --white: #ffffff;
+  --black: #000000;
+}
+
+.layout-container {
+  height: calc(100vh - 200px);
+}
+
+.login-form,
+.register-form {
+  width: 100%;
+  width: min(100%, 420px);
+  margin: 0 auto;
+  padding: 25px 0;
+}
+
+.btn-success,
+.btn-success:hover,
+.btn-success:active,
+.btn-success:visited,
+.btn-success:focus {
+  background-color: var(--green);
+  border-color: var(--green);
+  border-radius: 0.5em;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:active,
+.btn-secondary:visited,
+.btn-secondary:focus {
+  background-color: var(--white);
+  border-color: var(--green);
+  color: var(--green);
+  border-radius: 0.5em;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.btn-light,
+.btn-light:hover,
+.btn-light:active,
+.btn-light:visited,
+.btn-light:focus {
+  border: 1px solid lightgrey;
+  background-color: #ffffff;
+}
+
+.btn-link,
+.btn-link:hover,
+.btn-link:active,
+.btn-link:visited,
+.btn-link:focus {
+  text-decoration: none !important;
+  background-color: #ffffff !important;
+  color: #5A6E7A !important;
+  font-weight: 500;
+}
+
+footer {
+  background-color: var(--green);
+  color: var(--white);
+  padding: 10px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.gradient-bg {
+  /*background: linear-gradient(to left, var(--lightGreen), var(--darkGreen));
+  height: 100%;*/
+  background: url('../../../public/images/GeotaggerAssets/AuthBackground.png') center center no-repeat;
+  background-size: cover;
+}
+
+.fill {
+  min-height: 100%;
+  height: 100%;
+}
+
+.link-green,
+.link-green:hover,
+.link-green:active,
+.link-green:focus {
+  color: var(--green);
+}
+
+.login-icon {
+  width: 35px;
+  height: 35px;
+  padding-right: 10px;
+  margin: 0px;
+}
+
+.puls-button,
+.puls-button:hover,
+.puls-button:active,
+.puls-button:visited,
+.puls-button:focus {
+  color: var(--green) !important;
+  background-color: #ffffff !important;
+  border: none !important;
+}
+
+.plus-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.nav-profile {
+  border: 2px solid var(--green);
+  border-radius: 30px;
+}
+
+.nav-profile-button {
+  width: 40px;
+  height: 40px;
+  padding: 0px;
+  border-radius: 30px;
+  font-size: 8px;
+  text-align: center;
+  background-color: #ffffff !important;
+  border: none !important;
+}
+
+.nav-profile-button-big {
+  width: 80px;
+  height: 80px;
+}
+
+.nav-profile-button-icon {
+  color: #cacacaf5 !important;
+  width: 100%;
+  height: 100%;
+}
+
+.nav-profile-points {
+  display: inline;
+  font-weight: 400;
+  margin: 0px;
+}
+
+.image-upload-container {
+  text-align: center;
+}
+
+.selected-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+}
+
+.x-button,
+.x-button:hover,
+.x-button:active,
+.x-button:visited,
+.x-button:focus {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+  border: none !important;
+}
+
+#location-span {
+  color: var(--green);
+}
+
+.image-upload-btn {
+  text-align: right;
+}
+
+.img-button,
+.img-button:hover,
+.img-button:active,
+.img-button:visited,
+.img-button:focus {
+  color: var(--green) !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--green);
+  border-radius: 10px;
+}
+
+.selected-image-container {
+  width: 100;
+  height: 280px;
+  background-color: #CCCCCC;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.selected-image {
+  height: 100%;
+  width: auto;
+}
+
+.user-icon {
+  height: 4em !important;
+  width: 4em !important;
+}
+
+.location-card-editable {
+  width: 21rem;
+  height: 10rem;
+  background-color: #CCCCCC;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.location-card {
+  width: 21rem;
+  height: 10rem;
+  background-color: #CCCCCC;
+  border-radius: 5px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: var(--darkGreen);
+  }
+
+  &:hover .location-card-img {
+    opacity: 0;
+  }
+
+  .location-card-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+  }
+
+  &:hover .location-card-button {
+    display: block;
+    opacity: 1;
+  }
+}
+
+.location-card-img {
+  height: 10rem;
+}
+
+.text-green {
+  color: var(--green);
+}
+
+/************************************
+ * Global Styles / Utility Classes
+ ************************************/
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: #3b3b3b;
+}
+
+/* A general .btn class */
+.btn {
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+
+  &.primary {
+    padding: 0.5rem 3rem;
+    background-color: #619B8A;
+    color: #fff;
+    border-radius: 15px;
+
+    &:hover {
+      background-color: #619B8A;
+    }
+  }
+}
+
+/************************************
+ * Home Page Container
+ ************************************/
+.home-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/************************************
+ * Header
+ ************************************/
+.auth-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flexbox;
+  align-items: center;
+}
+
+.auth-links li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.separator {
+  margin: 0 0.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .btn-signup {
+    background-color: #619B8A;
+    color: #fff;
+    padding: 0.5rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+
+    &:hover {
+      background-color: #5e7d6f;
+    }
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #619B8A;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+
+    li a {
+      text-decoration: none;
+      color: #3b3b3b;
+      font-weight: 500;
+
+      &:hover {
+        color: #619B8A;
+      }
+    }
+  }
+}
+
+/************************************
+ * Hero Section
+ ************************************/
+.hero {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 2rem;
+  height: 75vh;
+
+  .hero-content {
+    flex: 0 0 20%;
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      color: #619B8A;
+    }
+
+    p {
+      max-width: 500px;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+  }
+
+  .hero-map {
+    flex: 1;
+    min-height: 650px;
+    margin-left: 2rem;
+    display: flex;
+    background: url('../../../public/images/GeotaggerAssets/MapBackground.png')
+      center center no-repeat;
+    background-size: cover;
+    opacity: 0.9;
+  }
+}
+
+/************************************
+ * Button Classes
+ ************************************/
+.btn {
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+
+  &.primary {
+    padding: 0.5rem 3.5rem;
+    background-color: #619B8A;
+    color: #fff;
+    border-radius: 15px;
+
+    &:hover {
+      background-color: #5e7d6f;
+    }
+  }
+}
+
+/************************************
+ * Cards Section
+ ************************************/
+.cards-section {
+  text-align: center;
+  padding: 2rem;
+
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: #619B8A;
+  }
+
+  p {
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    line-height: 1.5;
+  }
+
+  .cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    width: 450px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    /* ————— Add the green overlay & lock icon ————— */
+    .card-image {
+      position: relative; /* needed for the overlay & lock icon */
+      width: 450px;
+      height: 250px;
+      background-color: #ccc;
+      overflow: hidden;
+
+      /* The image itself */
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* The green overlay */
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0; /* top:0; right:0; bottom:0; left:0 */
+        background-color: rgba(97, 155, 138, 0.6); /* var(--green) w/ alpha */
+        z-index: 1; /* overlay is above the image, below the lock */
+      }
+
+      /* Lock icon if "locked" */
+      &.locked::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 32px;
+        height: 32px;
+        background: url("../../../public/images/GeotaggerAssets/Lock.png") no-repeat center center;
+        background-size: contain; 
+        z-index: 2; /* lock icon above the overlay */
+      }
+    }
+  }
+
+  .cards-cta {
+    height: 50vh;
+
+    .btn {
+      padding: 0.75rem 3.5rem;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      color: #fff;
+
+      &.primary {
+        background-color: #619B8A;
+
+        &:hover {
+          background-color: #004f48;
+        }
+      }
+    }
+  }
+}
+
+/************************************
+ * Footer
+ ************************************/
+ .footer {
+  background-color: var(--green); /* or #619B8A directly */
+  color: #fff; /* White text */
+  padding: 1rem 2rem; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+}
+
+.footer-left {
+  padding-left: 30px;
+  font-weight: 400; 
+  font-size: 1.2rem;
+}
+
+.footer-right {
+  font-size: 0.9rem; 
+  opacity: 0.9;
+}
+
+/************************************
+*show hide password
+ ************************************/
+
+/* Remove outline, set background/icon color, etc. */
+.password-toggle-btn {
+  border: none !important;
+  background: transparent !important;
+  color: #6c757d;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+
+  &:hover,
+  &:focus {
+    color: #333;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  svg {
+    font-size: 1.1rem;
+  }
+}
+/****************************
+*Login page
+*****************************/
+
+
+/********************************************
+ * Show/hide password input group styling
+ ********************************************/
+
+/* Ensures both input and button form a single rounded "pill" */
+.input-group.rounded-input-group {
+  .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+  }
+
+  .password-toggle-btn {
+    border: 1px solid #ced4da; // matches the input’s default border
+    border-left: none;         // remove overlapping border
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+  }
+
+  .link-green {
+    color: #619B8A;
+  }
+}
