@@ -1,4 +1,4 @@
-import AddLocationForm from 'components/location/AddLocationForm'
+import EditLocationForm from 'components/location/EditLocationForm'
 import Layout from 'components/ui/Layout'
 
 const AddLocation: React.FC = () => {
@@ -7,7 +7,7 @@ const AddLocation: React.FC = () => {
         <Layout>
         <div className="p-5 mb-4">
             <div className="container-fluid py-4">
-                <AddLocationForm />
+                <EditLocationForm />
             </div>
         </div>
     </Layout>

@@ -4,6 +4,7 @@ import { Modal, Button, Form } from 'react-bootstrap'
 import authStore from 'stores/auth.store'
 import * as API from 'api/Api'
 import ChangePasswordForm from 'components/user/ChangePasswordForm'
+import ChangeProfilePictureForm from 'components/user/ChangeProfilePictureForm'
 
 const ProfileSettings: React.FC = () => {
   const navigate = useNavigate()
@@ -19,26 +20,40 @@ const ProfileSettings: React.FC = () => {
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
-  // **New:** Controls the second modal
+  // Controls for the "Change Password" modal
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false)
+
+  // **New**: Controls for the "Change Profile Picture" modal
+  const [showProfilePicModal, setShowProfilePicModal] = useState(false)
 
   // Close the main profile modal
   const handleClose = () => {
     navigate(-1)
   }
 
-  // **New:** Open the Change Password modal
+  // Open the "Change Password" modal
   const handleOpenChangePasswordModal = (e: React.MouseEvent) => {
-    e.preventDefault() // prevent link navigation
+    e.preventDefault()
     setShowChangePasswordModal(true)
   }
 
-  // **New:** Close the Change Password modal
+  // Close the "Change Password" modal
   const handleCloseChangePasswordModal = () => {
     setShowChangePasswordModal(false)
   }
 
-  // Handle the main form submission
+  // **New**: Open the "Change Profile Picture" modal
+  const handleOpenProfilePicModal = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setShowProfilePicModal(true)
+  }
+
+  // **New**: Close the "Change Profile Picture" modal
+  const handleCloseProfilePicModal = () => {
+    setShowProfilePicModal(false)
+  }
+
+  // Handle the main form submission (updating name/email, etc.)
   const handleSubmitProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -50,7 +65,6 @@ const ProfileSettings: React.FC = () => {
       formData.append('email', email)
       formData.append('first_name', firstName)
       formData.append('last_name', lastName)
-      // If you have a profilePicture field, append it here as well
 
       const response = await API.updateUser(formData)
       if (response.data?.success) {
@@ -122,6 +136,13 @@ const ProfileSettings: React.FC = () => {
               </a>
             </div>
 
+            {/* **New**: Change profile picture link -> opens third modal */}
+            <div className="mt-2">
+              <a href="#" style={{ color: '#619B8A' }} onClick={handleOpenProfilePicModal}>
+                Change profile picture
+              </a>
+            </div>
+
             {/* Error / Success Messages */}
             {error && <div className="text-danger mt-3">{error}</div>}
             {successMessage && <div className="text-success mt-3">{successMessage}</div>}
@@ -148,6 +169,15 @@ const ProfileSettings: React.FC = () => {
         <Modal.Body>
           <ChangePasswordForm onClose={handleCloseChangePasswordModal} />
         </Modal.Body>
+      </Modal>
+
+      {/* =============== CHANGE PROFILE PICTURE MODAL =============== */}
+      <Modal show={showProfilePicModal} onHide={handleCloseProfilePicModal}>
+          <ChangeProfilePictureForm 
+            show={showProfilePicModal} 
+            onClose={handleCloseProfilePicModal} 
+            onSubmit={() => { /* handle submit logic here */ }} 
+          />
       </Modal>
     </>
   )

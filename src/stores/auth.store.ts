@@ -56,6 +56,10 @@ class AuthStore {
   getAuthHeader(): string | null {
     return this.token ? `${this.tokenType} ${this.token}` : null
   }
+
+  setToken(token: string) {
+    this.token = token;
+  }
 }
 
 const authStore = new AuthStore()

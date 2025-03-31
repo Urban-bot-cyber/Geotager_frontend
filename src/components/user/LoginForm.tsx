@@ -26,17 +26,8 @@ const LoginForm = observer(() => {
   const onSubmit = handleSubmit(async (data: LoginUserFields) => {
     setIsSubmitting(true)
 
-    // Log API call before sending
-    console.log('Sending Login Request:', {
-      method: 'POST',
-      url: `${process.env.REACT_APP_LARAVEL_API_URL}/api/login`, // Ensure this is correct
-      body: data,
-    })
-
     try {
       const response = await API.signin(data)
-      console.log('Login API Response:', response.data) // Log API response
-
       if (response.error) {
         setApiError(response.error.message || 'An error occurred during login.')
         setShowError(true)
@@ -69,11 +60,11 @@ const LoginForm = observer(() => {
   })
 
   const handleGoogleSignIn = () => {
-    window.location.href = `${process.env.REACT_APP_LARAVEL_API_URL}/auth/google`
+    window.location.href = `${process.env.REACT_APP_LARAVEL_API_URL}auth/google`
   }
 
   const handleFacebookSignIn = () => {
-    window.location.href = `${process.env.REACT_APP_LARAVEL_API_URL}/auth/facebook`
+    window.location.href = `${process.env.REACT_APP_LARAVEL_API_URL}auth/facebook`
   }
 
   return (
@@ -154,11 +145,12 @@ const LoginForm = observer(() => {
           </Button>
 
           <Button
-            className='w-100 btn btn-light mb-2 d-flex align-items-center justify-content-center'
+            className="w-100 btn btn-light mb-2 d-flex align-items-center justify-content-center"
             onClick={handleGoogleSignIn}
-            aria-label='Sign in with Google'
+            aria-label="Sign in with Google"
+            style={{ border: '1px solid #ccc' }}  // Add your desired border style here
           >
-            <FcGoogle className='login-icon me-2' /> Sign in with Google
+            <FcGoogle className="login-icon me-2" /> Sign in with Google
           </Button>
 
           <Button

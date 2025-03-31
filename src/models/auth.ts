@@ -5,5 +5,5 @@ export type UserType = {
   email: string
   role?: string
   points?: string
-  avatar?: string
+  profile_picture?: string
 }

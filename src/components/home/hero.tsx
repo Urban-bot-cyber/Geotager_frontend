@@ -7,7 +7,8 @@ import * as API from 'api/Api'
 interface Guess {
   id: number
   image: string
-  distance: number
+  error_distance: number
+  location: Location
 }
 
 interface Location {
@@ -26,37 +27,29 @@ const Hero: React.FC = observer(() => {
   const [loadingGuesses, setLoadingGuesses] = useState<boolean>(false)
   const [loadingLocations, setLoadingLocations] = useState<boolean>(false)
   const [guessLimit, setGuessLimit] = useState<number>(3)
-  const [locationLimit, setLocationLimit] = useState<number>(6)
+  const [locationLimit, setLocationLimit] = useState<number>(1)
   const [hasMoreGuesses, setHasMoreGuesses] = useState<boolean>(true)
   const [hasMoreLocations, setHasMoreLocations] = useState<boolean>(true)
 
-  /**
-   * Fetch data on mount if user is logged in
-   */
   useEffect(() => {
     if (isAuthenticated && user?.id) {
       fetchBestGuesses(guessLimit, true)
       fetchLatestLocations(locationLimit, true)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user?.id]) // We omit guessLimit, locationLimit to avoid repeated calls on state changes
+  }, [isAuthenticated, user?.id])
 
-  /**
-   * Fetch best guesses
-   */
   const fetchBestGuesses = async (newLimit: number, initialLoad = false) => {
     try {
       setLoadingGuesses(true)
-      const response = await API.getBestGuesses(newLimit) 
-      // e.g. response.data = array of guesses
-
-      if (response.data.length < newLimit) {
+      const response = await API.getBestGuesses(newLimit)
+      
+      if (response.data.data.length < newLimit) {
         setHasMoreGuesses(false)
       } else {
         setHasMoreGuesses(true)
       }
 
-      setBestGuesses(prev => (initialLoad ? response.data : [...prev, ...response.data]))
+      setBestGuesses(prev => (initialLoad ? response.data.data : [...prev, ...response.data.data]))
     } catch (error) {
       console.error('Error fetching best guesses:', error)
     } finally {
@@ -64,22 +57,19 @@ const Hero: React.FC = observer(() => {
     }
   }
 
-  /**
-   * Fetch latest locations
-   */
   const fetchLatestLocations = async (newLimit: number, initialLoad = false) => {
     try {
       setLoadingLocations(true)
-      const response = await API.getLocations(newLimit) 
-      // e.g. response.data = array of locations
+      const response = await API.getLocations(newLimit)
+      const locations = response.data?.data.data || []
 
-      if (response.data.length < newLimit) {
+      if (locations.length < newLimit) {
         setHasMoreLocations(false)
       } else {
         setHasMoreLocations(true)
       }
 
-      setLatestLocations(prev => (initialLoad ? response.data : [...prev, ...response.data]))
+      setLatestLocations(prev => (initialLoad ? locations : [...prev, ...locations]))
     } catch (error) {
       console.error('Error fetching latest locations:', error)
     } finally {
@@ -87,9 +77,6 @@ const Hero: React.FC = observer(() => {
     }
   }
 
-  /**
-   * Load more guesses
-   */
   const loadMoreGuesses = () => {
     if (loadingGuesses) return
     const newLimit = guessLimit + 3
@@ -97,76 +84,76 @@ const Hero: React.FC = observer(() => {
     fetchBestGuesses(newLimit)
   }
 
-  /**
-   * Load more locations
-   */
   const loadMoreLocations = () => {
     if (loadingLocations) return
-    const newLimit = locationLimit + 6
+    const newLimit = locationLimit + 3
     setLocationLimit(newLimit)
     fetchLatestLocations(newLimit)
   }
 
   return (
     <section className="hero">
-      {/**
-       * If user is authenticated, show:
-       * - Personal Best Guesses
-       * - New Locations
-       */}
       {isAuthenticated ? (
         <>
-          {/* Personal Best Guesses */}
+          {/* ✅ Always Show "Personal Best Guesses" Text */}
           <div className="personal-best-guesses">
             <h2 style={{ fontWeight: 'bold', color: '#619B8A' }}>Personal best guesses</h2>
             <p>Your personal best guesses appear here. Try to beat your personal records!</p>
 
+            {/* ✅ Only Show Guess Cards if Available */}
+            
             {loadingGuesses && bestGuesses.length === 0 ? (
               <p>Loading best guesses...</p>
             ) : bestGuesses.length > 0 ? (
-              <div className="best-guesses-grid">
-                {bestGuesses.map((guess, index) => (
-                  <div key={guess.id} className="guess-card">
+              <div
+              className="locations-grid"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gap: '30px',
+                justifyContent: 'center',
+                marginBottom: '40px',
+                maxWidth: '1200px',
+                margin: '0 auto',
+              }}
+            >
+                {bestGuesses.map((guess) => (
+                <div key={guess.id} className="guess-card">
+                  <div className="guess-image-container">
                     <img
-                      src={guess.image || '/images/default-location.jpg'}
-                      alt={`Best guess ${index + 1}`}
-                      style={{ width: '100%', height: 'auto' }}
+                      src={
+                        guess.location?.image
+                          ? `${process.env.REACT_APP_LARAVEL_API_URL}storage/${guess.location.image}`
+                          : '/images/img-empty.jpg'
+                      }
+                      alt="Guess"
+                      className="guess-image"
                     />
-                    <span className="guess-distance">{guess.distance} m</span>
+                    <div className="overlay" />
+                    <span className="guess-distance-overlay">
+                      {Number(guess.error_distance).toFixed(0)} m
+                    </span>
                   </div>
-                ))}
+                </div>
+              ))}
               </div>
             ) : (
               <p>No best guesses yet. Try making some guesses!</p>
             )}
 
             {hasMoreGuesses && bestGuesses.length > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
-                <button
-                  onClick={loadMoreGuesses}
-                  className="load-more-btn"
-                  style={{
-                    background: 'white',
-                    color: '#619B8A',
-                    border: '1px solid',
-                    borderColor: '#619B8A',
-                    borderRadius: '8px',
-                  }}
-                >
-                  {loadingGuesses ? 'Loading...' : 'Load more'}
-                </button>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <button onClick={loadMoreGuesses}  className='img-button p-2 mt-3'>Load more</button>
               </div>
-            )}
+            )} 
           </div>
 
-          {/* New Locations Section */}
-          <section className="latest-locations" style={{ marginTop: '40px' }}>
-            <h2
-              style={{ fontWeight: 'bold', textAlign: 'center', marginBottom: '10px', color: '#619B8A' }}
-            >
+          {/* ✅ Locations are Always Below Guesses */}
+          <section className="latest-locations" style={{ marginTop: '60px', paddingBottom: '40px' }}>
+            <h2 style={{ fontWeight: 'bold', textAlign: 'center', marginBottom: '15px', color: '#619B8A' }}>
               New Locations
             </h2>
-            <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
+            <p style={{ textAlign: 'center', color: '#666', marginBottom: '25px' }}>
               New uploads from users. Try to guess all the locations by pressing on a picture.
             </p>
 
@@ -177,102 +164,91 @@ const Hero: React.FC = observer(() => {
                 className="locations-grid"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                  gap: '15px',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  gap: '30px',
                   justifyContent: 'center',
-                  marginBottom: '20px',
+                  marginBottom: '40px',
+                  maxWidth: '1200px',
+                  margin: '0 auto',
                 }}
               >
                 {latestLocations.map((location) => (
                   <div
-                    key={location.id}
-                    className="location-card"
+                  key={location.id}
+                  className="location-card"
+                  onClick={() => navigate(`/guess/${location.id}`)}
+                >
+                  <img
+                    src={`${process.env.REACT_APP_LARAVEL_API_URL}storage/${location.image}` || '/images/img-empty.jpg'}
+                    alt={`Location ${location.id}`}
                     style={{
-                      position: 'relative',
-                      borderRadius: '12px',
-                      border: 'none',
-                      overflow: 'hidden',
-                      cursor: 'pointer',
+                      width: '100%',
+                      height: '220px',
+                      objectFit: 'cover',
+                      display: 'block',
+                      borderRadius: '10px',
                     }}
-                    onClick={() => navigate(`/guess/${location.id}`)}
-                  >
-                    <img
-                      src={location.image || '/images/default-location.jpg'}
-                      alt={`Location ${location.id}`}
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
-                    />
-                  </div>
+                  />
+                </div>
                 ))}
               </div>
             ) : (
-              <p style={{ textAlign: 'center', fontWeight: 'bold', color: '#666' }}>
-                No locations uploaded yet.
-              </p>
+              <p style={{ textAlign: 'center', fontWeight: 'bold', color: '#666' }}>No locations uploaded yet.</p>
             )}
 
             {hasMoreLocations && latestLocations.length > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
-                <button
-                  onClick={loadMoreLocations}
-                  className="load-more-btn"
-                  style={{
-                    background: 'white',
-                    color: '#619B8A',
-                    border: '1px solid',
-                    borderColor: '#619B8A',
-                    borderRadius: '8px',
-                  }}
-                >
-                  {loadingLocations ? 'Loading...' : 'Load more'}
-                </button>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <button onClick={loadMoreLocations} className='img-button p-2 mt-3'>Load more</button>
               </div>
             )}
           </section>
         </>
       ) : (
+        <>
         <div
-          className="hero-logged-out"
+        className="hero-logged-out"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2rem',
+          padding: '2rem',
+        }}
+      >
+      {/* Left column: Text */}
+      <div style={{ flex: '1' }}>
+        <h1 style={{ maxWidth: '200px', fontSize: '2.2rem', color: '#619B8A', marginBottom: '1rem' }}>
+          Explore the world with Geotagger!
+        </h1>
+        <p style={{ maxWidth: '400px', color: '#666', marginBottom: '2rem' }}>
+          Geotagger is a website that allows you to post pictures and tag them on the map.
+          Other users can try to guess their location. Join now to start exploring!
+        </p>
+        <button
+          className="btn btn-success"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2rem',
-            marginTop: '40px',
-            padding: '2rem',
+            backgroundColor: '#619B8A',
+            border: 'none',
+            padding: '10px 20px',
+            cursor: 'pointer',
           }}
+          onClick={() => navigate('/signup')}
         >
-        {/* Left column: Text */}
-        <div style={{ flex: '1' }}>
-          <h1 style={{ fontSize: '2rem', color: '#619B8A', marginBottom: '1rem' }}>
-            Explore the world with Geotagger!
-          </h1>
-          <p style={{ maxWidth: '600px', color: '#666', marginBottom: '2rem' }}>
-            Geotagger is a website that allows you to post pictures and tag them on the map.
-            Other users can try to guess their location. Join now to start exploring!
-          </p>
-          <button
-            className="btn btn-success"
-            style={{
-              backgroundColor: '#619B8A',
-              border: 'none',
-              padding: '10px 20px',
-              cursor: 'pointer',
-            }}
-            onClick={() => navigate('/signup')}
-          >
-            Sign up
-          </button>
-        </div>
-
-        {/* Right column: Image */}
-        <div style={{ flex: '1', textAlign: 'center' }}>
-          <img
-            src="/images/GeotaggerAssets/MapBackground.png"
-            alt="Map background"
-            style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
-          />
-        </div>
+          Sign up
+        </button>
       </div>
+
+      {/* Right column: Image */}
+      <div style={{ textAlign: 'center' }}>
+        <img
+          src="/images/GeotaggerAssets/MapBackground.png"
+          alt="Map background"
+          style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+        />
+      </div>
+    </div>
+
+    </>
       )}
     </section>
   )

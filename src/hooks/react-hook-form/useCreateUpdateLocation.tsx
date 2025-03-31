@@ -8,7 +8,8 @@ export interface CreateUpdateLocationFields {
     latitude: number
     longitude: number
     user_id: string
-    image: string
+    image?: string
+    id?: string
 }
 
 interface Props {
@@ -21,6 +22,7 @@ export const useCreateUpdateLocationForm = ({ defaultValues }: Props) => {
         longitude: z.number(),
         user_id: z.string(),
         image: z.string(),
+        id: z.string(),
     })
 
     const {

@@ -18,12 +18,17 @@ type AppRoute = RouteProps & {
 const Home = lazy(() => import('pages/Home'))
 const Login = lazy(() => import('pages/Login'))
 const Register = lazy(() => import('pages/Register'))
+const OAuthCallback = lazy(() => import('components/user/OAuthCallback'))
+
 
 /* Private routes */
 const AddLocation = lazy(() => import('pages/Locations/AddLocation'))
+const EditLocation = lazy(() => import('pages/Locations/EditLocation'))
 const Profile = lazy(() => import('pages/Profile'))
 
 const ProfileSettings = lazy(() => import('pages/ProfileSettings'))
+
+const GuessPage = lazy(() => import('pages/Guess'))
 /* Restricted routes */
 
 
@@ -46,8 +51,18 @@ export const AppRoutes: AppRoute[] = [
   },
   {
     type: RouteType.PRIVATE,
+    path: '/locations/:id/edit',
+    children: <EditLocation />,
+  },
+  {
+    type: RouteType.PRIVATE,
     path: '/profile-settings',
     children: <ProfileSettings />,
+  },
+  {
+    type: RouteType.PRIVATE,
+    path: '/guess/:id',
+    children: <GuessPage />,
   },
   // Public Routes
   {
@@ -59,6 +74,11 @@ export const AppRoutes: AppRoute[] = [
     type: RouteType.PUBLIC,
     path: '/login',
     children: <Login />,
+  },
+  {
+    type: RouteType.PUBLIC,
+    path: '/OAuthCallback',
+    children: <OAuthCallback />,
   },
   {
     type: RouteType.PUBLIC,
@@ -102,7 +122,6 @@ const Routes: FC = () => {
             <Route key={`${r.path}`} path={`${r.path}`} element={r.children} />
           )
         })}
-        <Route path="*" element={<Page404 />} />
       </Switch>
     </Suspense>
   )

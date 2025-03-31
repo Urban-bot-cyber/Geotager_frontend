@@ -1,86 +1,100 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
 import Avatar from 'react-avatar'
 import Layout from 'components/ui/Layout'
 import authStore from 'stores/auth.store'
-import * as API from 'api/Api' // <-- Where you'll define getBestGuesses() and getLocationsByUserId()
+import * as API from 'api/Api'
 import { routes } from 'constants/routesConstants'
 import EditableLocationCard from 'components/location/EditableLocationCard'
 import { FaCircleUser } from 'react-icons/fa6'
 import { LocationType } from 'models/location'
 
+
 const Profile: React.FC = observer(() => {
   const navigate = useNavigate()
-  const userId = authStore.user?.id
+  const { user } = authStore
+  const userId = user?.id
 
-  // Best Guesses query
+  // ===== Best Guesses =====
+  const [displayedGuesses, setDisplayedGuesses] = useState(3)
+
   const {
     data: bestGuessesResponse,
     isLoading: isBestGuessesLoading,
     error: bestGuessesError,
-  } = useQuery(
-    ['getBestGuesses'],
-    () => API.getBestGuesses(10), 
-    {
-      // Only call if user is logged in
-      enabled: !!userId,
-    }
-  )
+  } = useQuery(['getBestGuesses'], () => API.getBestGuesses(10), {
+    enabled: !!userId,
+  })
 
-  // User Locations query
-  const {
-    data: userLocationsResponse,
-    isLoading: isUserLocationsLoading,
-    error: userLocationsError,
-  } = useQuery(
-    ['getLocationsByUserId', userId],
-    () => API.currentUserLocations(10),
-    {
-      enabled: !!userId,
-    }
-  )
+  const bestGuesses = bestGuessesResponse?.data?.data || []
 
-  // Extract arrays from responses
-  // bestGuessesResponse might look like { success: true, data: [...guesses], message: '...' }
-  const bestGuesses = bestGuessesResponse?.data || []
-  // userLocationsResponse might look like { success: true, data: { data: [...locations], meta: {}, links: {} }, message: '...' }
-  // If you are returning a paginated response, your actual locations might be in userLocationsResponse.data.data
-  const locations = userLocationsResponse?.data?.data || []
-
-  // For "Load More" (if needed)
-  const [displayedCount, setDisplayedCount] = useState(5)
-  const loadMore = () => {
-    setDisplayedCount(prev => Math.min(prev + 5, locations.length))
+  const loadMoreGuesses = () => {
+    setDisplayedGuesses((prev) => Math.min(prev + 3, bestGuesses.length))
   }
+
+  // ===== My Uploads (Paginated) =====
+  const [locations, setLocations] = useState<LocationType[]>([])
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false)
+  const [locationsError, setLocationsError] = useState<Error | null>(null)
+
+  const fetchLocations = async () => {
+    try {
+      setIsLoadingLocations(true)
+      const response = await API.currentUserLocations(page, 3)
+      const dataWrapper = response.data?.data
+      const newLocations = Array.isArray(dataWrapper?.data) ? dataWrapper.data : []
+  
+      setLocations((prev) => {
+        const all = [...prev, ...newLocations]
+        const uniqueById = Array.from(new Map(all.map(loc => [loc.id, loc])).values())
+        return uniqueById
+      })
+  
+      setHasMore(dataWrapper?.current_page < dataWrapper?.last_page)
+    } catch (error: any) {
+      setLocationsError(error)
+    } finally {
+      setIsLoadingLocations(false)
+    }
+  }
+
+  useEffect(() => {
+    if (user) {
+      fetchLocations()
+    }
+  }, [page])
 
   return (
     <Layout>
       <div className="p-2 mb-4">
         <div className="container-fluid py-4">
-          {/* If no user in store, show fallback icon */}
-          {!authStore.user ? (
+          {/* Avatar */}
+          {!user ? (
             <FaCircleUser className="nav-profile-button-icon" size={60} />
           ) : (
             <div className="d-flex align-items-center mb-3">
               <Avatar
                 round
                 src={
-                  authStore.user.avatar
-                    ? `${process.env.REACT_APP_LARAVEL_API_URL}${authStore.user.avatar}`
-                    : ''
+                  user.profile_picture
+                    ? `${process.env.REACT_APP_LARAVEL_API_URL}storage/${user.profile_picture}`
+                    : '/images/default-avatar.png'
                 }
+                name={`${user.first_name} ${user.last_name}`}
                 alt="User Avatar"
                 className="user-icon me-3"
               />
               <h1 className="font-weight-normal">
-                {authStore.user.first_name} {authStore.user.last_name}
+                {user.first_name} {user.last_name}
               </h1>
             </div>
           )}
 
-          {/* My Best Guesses Section */}
+          {/* My Best Guesses */}
           <h2 className="mt-4">My best guesses</h2>
           {isBestGuessesLoading ? (
             <div>Loading guesses...</div>
@@ -89,56 +103,71 @@ const Profile: React.FC = observer(() => {
           ) : bestGuesses.length === 0 ? (
             <>
               <p>No best guesses yet!</p>
-              <p>Start a new game and guess the location of the picture to see your results here.</p>
-              <button
-                className="btn btn-primary"
-                onClick={() => navigate(routes.LOCATIONS)}
-              >
+              <button className="btn btn-primary" onClick={() => navigate(routes.LOCATIONS)}>
                 Go to locations
               </button>
             </>
           ) : (
             <>
-              {/* Render guesses however you'd like—cards, table, etc. */}
-              {bestGuesses.map((guess: any) => (
-                <div key={guess.id}>
-                  {/* Replace with your own Guess component or layout */}
-                  <p>Distance: {guess.error_distance}</p>
+              <div className="d-flex flex-wrap gap-3 justify-content-center mt-3">
+                {bestGuesses.slice(0, displayedGuesses).map((guess: any) => (
+                  <div key={guess.id} className="guess-card">
+                    <div className="guess-image-container">
+                      <img
+                        src={`${process.env.REACT_APP_LARAVEL_API_URL}storage/${guess.location.image}`}
+                        alt="Guess location"
+                        className="guess-image"
+                      />
+                      <div className="overlay" />
+                      <div className="guess-distance-overlay">
+                        {Math.round(Number(guess.error_distance))} m
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {displayedGuesses < bestGuesses.length && (
+                <div className="text-center mt-3">
+                  <button onClick={loadMoreGuesses} className="img-button p-2 mt-3">
+                    Load More
+                  </button>
                 </div>
-              ))}
+              )}
             </>
           )}
 
-          {/* My Uploads Section */}
+          {/* My Uploads */}
           <h2 className="mt-5">My uploads</h2>
-          {isUserLocationsLoading ? (
+          {isLoadingLocations && page === 1 ? (
             <div>Loading uploads...</div>
-          ) : userLocationsError ? (
+          ) : locationsError ? (
             <div className="text-danger">Error fetching uploads.</div>
           ) : locations.length === 0 ? (
             <>
               <p>No uploads yet!</p>
-              <p>
-                You can add new locations by clicking the “Add location” button below
-                or in the navigation bar.
-              </p>
-              <button
-                className="btn btn-success"
-                onClick={() => navigate(routes.ADDLOCATION)}
-              >
+              <button className="btn btn-success" onClick={() => navigate(routes.ADDLOCATION)}>
                 Add location
               </button>
             </>
           ) : (
             <>
               <div className="d-flex flex-wrap gap-4 justify-content-center">
-                {locations.slice(0, displayedCount).map((location: LocationType) => (
-                  <EditableLocationCard key={location.id} location={location} />
+              {locations.map((location: LocationType) => (
+                  <EditableLocationCard
+                    key={`location-${location.id}`}
+                    location={location}
+                    onDelete={(deletedId) => {
+                      setLocations(prev => prev.filter(loc => loc.id !== String(deletedId)))
+                    }}
+                  />
                 ))}
               </div>
-              {displayedCount < locations.length && (
+              {hasMore && (
                 <div className="text-center mt-4">
-                  <button onClick={loadMore} className="btn btn-secondary">
+                  <button
+                    onClick={() => setPage((prev) => prev + 1)}
+                    className="img-button p-2 mt-3"
+                  >
                     Load More
                   </button>
                 </div>

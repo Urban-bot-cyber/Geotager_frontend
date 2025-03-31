@@ -9,8 +9,22 @@
   --black: #000000;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 .layout-container {
-  height: calc(100vh - 200px);
+  height: calc(100vh - 120px); /* Adjust if needed */
+  overflow-y: auto; /* Ensures scrolling works */
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 80px; /* Avoids overlapping with header */
+  padding-bottom: 80px; /* Prevents overlap with footer */
 }
 
 .login-form,
@@ -21,7 +35,13 @@
   padding: 25px 0;
 }
 
-.btn-success,
+.btn-success{
+  background-color: var(--green);
+  border-color: var(--green);
+  border-radius: 0.5em;
+  padding-left: 20px;
+  padding-right: 20px;
+}
 .btn-success:hover,
 .btn-success:active,
 .btn-success:visited,
@@ -178,8 +198,19 @@ footer {
   text-align: right;
 }
 
-.img-button,
-.img-button:hover,
+.img-button{
+  color: var(--green) !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--green);
+  border-radius: 10px;
+}
+.img-button:hover{
+  color: #ffffff !important;
+  background-color: var(--green) !important;
+  border: 1px solid var(--green);
+  border-radius: 10px;
+  cursor: pointer;
+}
 .img-button:active,
 .img-button:visited,
 .img-button:focus {
@@ -215,7 +246,8 @@ footer {
   text-align: center;
 }
 
-.location-card {
+.location-card,
+.guess-card {
   width: 21rem;
   height: 10rem;
   background-color: #CCCCCC;
@@ -225,14 +257,8 @@ footer {
   overflow: hidden;
   transition: background-color 0.3s ease;
 
-  &:hover {
-    background-color: var(--darkGreen);
-  }
 
-  &:hover .location-card-img {
-    opacity: 0;
-  }
-
+ 
   .location-card-button {
     position: absolute;
     top: 50%;
@@ -246,7 +272,9 @@ footer {
     opacity: 1;
   }
 }
-
+.location-card:hover {
+  background-color: var(--darkGreen);
+}
 .location-card-img {
   height: 10rem;
 }
@@ -254,7 +282,11 @@ footer {
 .text-green {
   color: var(--green);
 }
-
+.location-card:hover,
+.guess-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
 /************************************
  * Global Styles / Utility Classes
  ************************************/
@@ -302,7 +334,7 @@ body {
  ************************************/
 .auth-links {
   list-style: none;
-  margin: 0;
+  margin: 0 0 0 180px;
   padding: 0;
   display: flexbox;
   align-items: center;
@@ -325,6 +357,8 @@ body {
   padding: 1rem 2rem;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 1rem 2rem;
 
   .btn-signup {
     background-color: #619B8A;
@@ -370,11 +404,15 @@ body {
  ************************************/
 .hero {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 4rem 2rem;
-  height: 75vh;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto; 
 
   .hero-content {
     flex: 0 0 20%;
@@ -446,14 +484,15 @@ body {
 
   .cards {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    justify-content: center; /* Center the cards horizontally */
+    gap: 15px; /* Space between cards */
+    flex-wrap: wrap; /* Ensure responsiveness on smaller screens */
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
 
   .card {
-    width: 450px;
+    width: 350px;
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -464,8 +503,8 @@ body {
     /* ————— Add the green overlay & lock icon ————— */
     .card-image {
       position: relative; /* needed for the overlay & lock icon */
-      width: 450px;
-      height: 250px;
+      width: 350px;
+      height: 150px;
       background-color: #ccc;
       overflow: hidden;
 
@@ -598,4 +637,376 @@ body {
   .link-green {
     color: #619B8A;
   }
+}
+
+/************************************
+ * Personal Best Guesses Section
+ ************************************/
+ .personal-best-guesses {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Grid layout for best guesses */
+.best-guesses-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/************************************
+ * Locations Section (Ensure It Appears Below Guesses)
+ ************************************/
+ .latest-locations {
+  width: 100%;
+  text-align: center;
+  margin-top: 40px; /* Space between guesses and locations */
+}
+
+
+/* Locations appear in a single column below the guesses */
+.locations-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.best-guesses-grid,
+.locations-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.best-guesses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.guess-card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 200px;
+}
+
+.guess-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.guess-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Green overlay */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(97, 155, 138, 0.45); /* Green hue */
+  z-index: 1;
+}
+
+/* Distance text */
+.guess-distance-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  z-index: 2;
+}
+
+.guess-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+}
+
+.guess-left {
+  flex: 3; /* make this wider */
+  min-width: 800px;
+}
+
+.guess-right {
+  flex: 3; /* More weight */
+  min-width: 400px;
+  max-width: 100%; /* optional, prevents overflow */
+}
+
+.guess-image img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.guess-map {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.leaderboard-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.rank {
+  font-weight: bold;
+  color: #619b8a;
+}
+
+.rank-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 28px;
+  margin-right: 10px;
+}
+
+.rank-1 {
+  background: linear-gradient(135deg, #fca311, #fcbf49); /* Gold */
+}
+
+.rank-2 {
+  background: linear-gradient(135deg, #c0c0c0, #d9d9d9); /* Silver */
+}
+
+.rank-3 {
+  background: linear-gradient(135deg, #cd7f32, #d29c6a); /* Bronze */
+}
+
+.rank-default {
+  background-color: #1e2b38;
+  color: white;
+}
+
+.leaderboard-content {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.name {
+  font-weight: 500;
+}
+
+.timestamp {
+  color: #666;
+  font-size: 13px;
+}
+
+
+.distance {
+  min-width: 50px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.distance-text {
+  font-weight: bold;
+  font-size: 16px;
+  color: #4f8a73;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.leaderboard-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.distance-wrapper {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.leaderboard {
+  width: 100%;
+}
+
+.leaderboard-row {
+  width: 100%;
+}
+
+.distance-container {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.highlight-entry {
+  background-color: var(--green); /* Or use a lighter variation */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.highlight-entry .distance-text {
+  color: white;
+}
+
+.btn-edit {
+  background-color: #4f8a73; /* Bootstrap green */
+  color: white;
+}
+
+.btn-edit:hover {
+  background-color: #4f8a73;
+}
+
+.btn-delete {
+  background-color: rgba(220, 53, 69, 0.8); /* red with 80% opacity */
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: rgba(200, 35, 51, 0.9);
+}
+
+.square-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  border-radius: 0.5rem; 
+}
+.square-btn:focus,
+.square-btn:active {
+  outline: none;
+  box-shadow: none;
+}
+
+.activity-log-container {
+  padding: 20px;
+  width: '100%' !important;
+}
+
+/* Remove heavy borders and lighten text */
+.activity-table {
+  border: none;
+  color: #6c757d; /* A typical Bootstrap gray */
+  font-size: 0.95rem;
+  width: '100%' !important;
+}
+
+.activity-table thead th {
+  border-bottom: none !important; /* remove the bottom border in the header */
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.activity-table tbody tr {
+  border-bottom: 1px solid #f1f1f1; /* a light horizontal divider */
+}
+
+/* Remove top border from the first row */
+.activity-table tbody tr:first-child td {
+  border-top: none;
+}
+
+/* Table cells */
+.activity-table td {
+  border-top: none !important;
+  vertical-align: middle;
+  color: #6c757d;
+}
+
+/* User cell styling */
+.user-cell {
+  display: flex;
+  align-items: center;
+}
+
+/* Avatar styling */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+/* Slightly bolder name text, if desired */
+.user-name {
+  font-weight: 500;
+  color: #495057;
+}
+
+.activity-table thead th {
+  font-weight: normal !important;
+  color: #6c757d;
+  border-bottom: none !important;
+} 
+
+/* Make user names black */
+.user-name {
+  font-weight: 500;
+  color: #000; /* Black text */
+}
+
+/* Apply a very light gray background to even rows */
+.activity-table tbody tr:nth-child(odd) {
+  background-color: #f9f9f9; /* Very light gray */
+}
+
+.activity-log-container {
+  height: 100vh; 
+  overflow-y: auto;
+}
+
+/* Optional: If you also need horizontal scrolling */
+.activity-log-container .table-responsive {
+  overflow-x: auto;
 }

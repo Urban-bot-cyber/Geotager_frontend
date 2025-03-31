@@ -1,17 +1,17 @@
-import AddLocationForm from 'components/location/AddLocationForm'
+import GuessForm from 'components/guess/GuessForm'
 import Layout from 'components/ui/Layout'
 
-const AddLocation: React.FC = () => {
+const GuessLocation: React.FC = () => {
   
     return (
         <Layout>
         <div className="p-5 mb-4">
             <div className="container-fluid py-4">
-                <AddLocationForm />
+                <GuessForm />
             </div>
         </div>
     </Layout>
     )
   }
   
-  export default AddLocation
+  export default GuessLocation
