@@ -58,7 +58,7 @@ class AuthStore {
   }
 
   setToken(token: string) {
-    this.token = token;
+    this.token = token
   }
 }
 
